@@ -1,9 +1,8 @@
 - 👋 Hi, I’m @ALTAMASH80
 - 👀 I’m interested in Laminas-Mvc, Doctrine and ReactPHP/Swoole.
-- 🌱 I’m a PHP developer since Dec-15-2008. But I consider myself as a code monkey not a crafts man. 
-- 💞️ I’m looking to collaborate on Laminas. But the pre-requisites are way to tough for me. As they require TDD as a must have skill. :(
-- 👀 I know basic of TDD. I've written basic TDD for Laminas-Form. Which was easy, as you can see other people code and copy paste with a bit of brain. :P
-- 📫 How to reach me, You guys can contact me via my [contact form](http://www.lrphpt.com/contact). 
+- 🌱 I have been a PHP developer since Dec-15-2008. But I consider myself a code monkey, not a craftsman. 
+- 💞️ I’m looking to collaborate on Laminas. But the prerequisites are way too tough for me. As they require TDD as a must-have skill. :(
+- 👀 I know the basics of TDD. I've written basic TDD for Laminas-Form. Which was easy, as you can see other people code and copy-paste with a bit of brain. :P 
 - 👋 I work on PHP because people hate it and call it an interpreter language. Which is not true at all. You can see my post [here](http://www.lrphpt.com/blog/post/php-is-not-an-interpreter-language/11) about it. Thanks!
 
 <!---
