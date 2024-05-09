@@ -336,3 +336,89 @@ After this, you should have access to the following URLs.
 4. localhost/user/change-email
 
 But when you'll register a member/user you would want to send an email for verification. But you'll see that no email goes out and you'll start crying. So, don't be sad. I'll teach you how to send email via LmcUser.
+
+## Let us create listener to send email after registration in LmcUserDoctrine.
+
+As you know that Laminas MVC is also an event-driven system that is the reason why in my opinion this is the best User module out there in the MVC frameworks because this module teaches you a lot of things about development. So how does one send email with LmcUser. Tthis module teaches you to register a listener to send an email or even a text message if your member registration requires a cell number. So, let us see how to listen even in Laminas MVC. So, this module fires two event for register, change password and change email. So, for us the post event for register is the one which we'll use. So, let us get started.
+
+```
+// Create a listener class in module/Application/src/Listeners/UserManagementListener.php
+<?php
+declare(strict_types=1);
+namespace Application\Listeners;
+ 
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\AbstractListenerAggregate;
+ 
+class UserManagementListener extends AbstractListenerAggregate {
+    public function attach(EventManagerInterface $events, $priority = -1)
+    {
+        $this->listeners[] = $events->getSharedManager()
+        ->attach('LmcUser\Service\User', 'register.post', [$this, 'onMemberRegisterSendAnEmail']);
+    }
+    
+    public function onMemberRegisterSendAnEmail($e): void
+    {
+        $params = $e->getParams();
+        $target = $e->getTarget(); // Target is the call from which the even is fired.
+        $userObject = $params['user'];
+        $filePath = realpath(__DIR__ . '/../../../../data/mail') . '/';
+        //        $newRole = $target->getServiceManager()->get('your_email_service');
+        $fileTransport = new \Laminas\Mail\Transport\File(
+            new \Laminas\Mail\Transport\FileOptions(
+            [
+                'path'             => $filePath,
+                'callback' => function (\Laminas\Mail\Transport\File $transport) {
+                return sprintf(
+                    'Message_%s_%s.txt',
+                    date('Y-m-d_H-i'),
+                    \Laminas\Math\Rand::getString(8)
+                    );
+                },
+            ])
+        );
+        $message = new \Laminas\Mail\Message();
+        $message->addTo($userObject->getEmail())
+            ->addFrom('contact@youradmin.com')
+            ->setSubject('Email confirmation code.')
+            ->setBody('Enter your message here what ever suits you.');
+        $fileTransport->send($message);
+    }
+}
+ 
+// Insert the below configuration in module/Application/config/module.config.php
+ 
+return [
+    // ... all other configuration
+    'service_manager' => [
+        'alias' => [
+            'lmcuser_base_hydrator' => DoctrineObjectHydratorFactory::class,
+        ],
+        'factories' => [
+            'lmcuser_user_hydrator' => DoctrineObjectHydratorFactory::class,
+            \Application\Listeners\UserManagementListener::class => \Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory::class,
+        ],
+    ],
+ 
+    'listeners' => [
+        \Application\Listeners\UserManagementLister::class,
+    ],
+];
+ 
+composer require "laminas/laminas-mail:^2.16"
+ 
+// create dir mail to view the email message.
+mkdir -p data/mail
+ 
+// to let apache write in the data directory.
+chmod -R $USER:www-data ./data
+```
+
+ ## Conclusion
+
+1. In this tutorial, we've learned to use Doctrine Annotations alongside the Laminas MVC module LmcUserDoctrine.
+2. We learned the use of Doctrine Migrations to generate migrations for use to use. Which is a very helpful tool. We saw how Doctrine can read the Database and compare it with our entities and determine what changes are needed and can generate migrations for us.
+3. In this tutorial, we've learnt the use of Interfaces a software development key concept and used it to create a User Entity via Doctrine. So, this example here can best describe the difference between inheritance and interface software design concepts.
+4. We've learnt how to make use of Laminas MVC events which got executed by LmcUser. We listened to one of the events of LmcUser which was "post.register" and we sent an email after a successful registration.
+5. In the next tutorial, we'll learn to assign roles to a user and restrict a user to view different sections of the site.
+
